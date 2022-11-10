@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 gem 'activerecord'
-gem 'discordrb'
+gem 'discordrb', git: 'https://github.com/shardlab/discordrb'
 gem 'dotenv'
 gem 'pry', '~> 0.14.1'
 gem 'rake', group: :development

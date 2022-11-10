@@ -1,5 +1,5 @@
 init:
 	bundle install
 
-start: init
+start:
 	bundle exec ruby src/start.rb

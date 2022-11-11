@@ -55,6 +55,10 @@ GEM
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    rack (3.0.0)
+    rackup (0.2.2)
+      rack (>= 3.0.0.beta1)
+      webrick
     rainbow (3.1.1)
     rake (13.0.6)
     rbi (0.0.16)
@@ -90,6 +94,7 @@ GEM
       sorbet-static (= 0.5.10549)
     sorbet-runtime (0.5.10549)
     sorbet-static (0.5.10549-universal-darwin-22)
+    sorbet-static (0.5.10549-x86_64-linux)
     sorbet-static-and-runtime (0.5.10549)
       sorbet (= 0.5.10549)
       sorbet-runtime (= 0.5.10549)
@@ -131,18 +136,24 @@ GEM
 
 PLATFORMS
   x86_64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
   activerecord
   discordrb!
   dotenv
   pry (~> 0.14.1)
+  rack
+  rackup
   rake
   rubocop
   ruby-lsp
   sorbet
   sorbet-runtime
   tapioca
+
+RUBY VERSION
+   ruby 3.1.2p20
 
 BUNDLED WITH
    2.3.7

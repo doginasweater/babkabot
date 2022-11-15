@@ -2,7 +2,11 @@
   "compilerOptions": {
     "strict": true,
     "incremental": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "esModuleInterop": true
   },
   "include": [
     "./src",

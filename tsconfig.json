@@ -1,13 +1,14 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "incremental": true,
-        "allowSyntheticDefaultImports": true
-    },
-    "include": [
-        "./src"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "strict": true,
+    "incremental": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "./src",
+    "./.eslintrc.cjs",
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

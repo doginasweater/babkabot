@@ -4,8 +4,8 @@ A discord bot for the storage of links?
 
 ## Install
 
-Requires ruby 3.1.2
+Requires node
 
 1. clone
-2. `bundle install`
-3. `bundle exec ruby basic.rb`
+2. `npm i`
+3. `npm start`

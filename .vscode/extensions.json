@@ -1,6 +1,5 @@
 {
     "recommendations": [
-        "sorbet.sorbet-vscode-extension",
-        "shopify.ruby-extensions-pack"
+        "dbaeumer.vscode-eslint"
     ]
 }

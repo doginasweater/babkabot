@@ -1,5 +1,5 @@
 init:
-	bundle install
+	npm i
 
-start:
-	bundle exec ruby src/start.rb
+start: init
+	npm run start

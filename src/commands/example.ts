@@ -6,5 +6,9 @@ export const data =
     .setDescription('An example slash command...?');
 
 export const execute = async (interaction: ChatInputCommandInteraction) => {
-  await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member?.joinedAt ?? '???'}.`);
+  if (interaction.member && 'joinedAt' in interaction.member) {
+    await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt?.toString() ?? '???'}.`);
+  } else {
+    await interaction.reply(`This command was run by ${interaction.user.username}.`);
+  }
 }

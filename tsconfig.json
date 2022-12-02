@@ -6,7 +6,11 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ESNext",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": [
+      "ESNext"
+    ],
+    "sourceMap": true,
   },
   "include": [
     "./src",

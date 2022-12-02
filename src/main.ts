@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { ChatInputCommandInteraction, Client, Collection, Events, REST, RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, Client, Collection, Events, SlashCommandBuilder } from 'discord.js';
 import { PrismaClient } from '@prisma/client';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -63,7 +63,7 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 });
 
-client.on(Events.ClientReady, client => {
+client.on(Events.ClientReady, () => {
   console.log('Attempting to deploy slash commands');
 
   deploy(DISCORD_API_TOKEN, DISCORD_CLIENT_ID, TEST_SERVER).catch(console.error);

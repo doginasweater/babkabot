@@ -23,7 +23,7 @@ RUN swift package resolve
 COPY . .
 
 # Build everything, with optimizations
-RUN swift build
+RUN swift build --static-swift-stdlib
 
 # Switch to the staging area
 WORKDIR /staging
@@ -65,6 +65,8 @@ WORKDIR /app
 
 # Copy built executable and any staged resources from builder
 COPY --from=build --chown=vapor:vapor /staging /app
+
+COPY ./.env.development /app
 
 # Ensure all further commands run as the vapor user
 USER vapor:vapor

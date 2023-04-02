@@ -70,9 +70,19 @@ struct DefineHandler {
       .compactMap { $0 }
       .compactMap { $0.meanings }
       .flatMap { $0 }
-      .compactMap { $0.definitions }
+      .map { meaning -> [String?] in
+        let d = meaning.definitions?.compactMap { $0 } ?? []
+
+        return d.map { def in
+          if meaning.partOfSpeech == nil || def.definition == nil {
+            return nil
+          }
+
+          return "(\(meaning.partOfSpeech ?? "")) \(def.definition ?? "")"
+        }
+      }
       .flatMap { $0 }
-      .compactMap { $0.definition }
+      .compactMap { $0 }
       .joined(separator: "\n")
 
     await respond(word, dictResponse)

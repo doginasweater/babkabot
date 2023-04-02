@@ -17,12 +17,10 @@ struct DefineHandler {
 
   func handle() async {
     guard case let .applicationCommand(data) = event.data,
-      let kind = CommandKind(name: data.name) else {
+      CommandKind(name: data.name) != nil else {
         logger.error("Unrecognized command")
         return await sendUnknownCommandFailure()
       }
-
-    // guard await acknowledge(isEphemeral: kind.isEphemeral) else { return }
 
     let options = data.options ?? []
 
@@ -146,22 +144,5 @@ struct DefineHandler {
         data: isEphemeral ? .init(flags: [.ephemeral]) : nil
       )
     )
-  }
-}
-
-enum CommandKind {
-  case define
-
-  var isEphemeral: Bool {
-    switch self {
-      case .define: return true
-    }
-  }
-
-  init? (name: String) {
-    switch name {
-      case "define": self = .define
-      default: return nil
-    }
   }
 }

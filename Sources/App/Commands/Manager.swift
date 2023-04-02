@@ -9,6 +9,23 @@ struct CommandsManager {
   }
 }
 
+enum CommandKind {
+  case define
+
+  var isEphemeral: Bool {
+    switch self {
+      case .define: return true
+    }
+  }
+
+  init? (name: String) {
+    switch name {
+      case "define": self = .define
+      default: return nil
+    }
+  }
+}
+
 private extension RequestBody.ApplicationCommandCreate {
   static let define = RequestBody.ApplicationCommandCreate(
     name: "define",

@@ -1,0 +1,28 @@
+{
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "sourceLanguages": [
+        "swift"
+      ],
+      "name": "Debug Run",
+      "program": "${workspaceFolder:babkabot}/.build/debug/Run",
+      "args": [],
+      "cwd": "${workspaceFolder:babkabot}",
+      "preLaunchTask": "swift: Build Debug Run"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "sourceLanguages": [
+        "swift"
+      ],
+      "name": "Release Run",
+      "program": "${workspaceFolder:babkabot}/.build/release/Run",
+      "args": [],
+      "cwd": "${workspaceFolder:babkabot}",
+      "preLaunchTask": "swift: Build Release Run"
+    }
+  ]
+}

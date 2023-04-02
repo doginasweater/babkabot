@@ -76,7 +76,7 @@ struct DefineHandler {
             return nil
           }
 
-          return "(\(meaning.partOfSpeech ?? "")) \(def.definition ?? "")"
+          return "**(\(meaning.partOfSpeech ?? ""))** \(def.definition ?? "")"
         }
       }
       .flatMap { $0 }
@@ -95,7 +95,7 @@ struct DefineHandler {
         data: .init(
           embeds: [
             .init(
-              title: "Definition for \(word)",
+              title: "Definition for **\(word)**",
               description: response
             )
           ]

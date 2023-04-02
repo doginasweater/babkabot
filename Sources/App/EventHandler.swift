@@ -12,8 +12,7 @@ struct EventHandler: Sendable {
       switch event.data {
         case .interactionCreate(let interaction):
           await DefineHandler(event: interaction, client: client).handle()
-        default:
-          logger.info("Event: \(String(describing: event.data))")
+        default: break
       }
     }
   }

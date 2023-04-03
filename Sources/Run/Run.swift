@@ -25,7 +25,7 @@ enum Run {
     var env = try Environment.detect()
 
     // In prod, we're going to use the discord logger
-    if !env.isRelease || env.name == "production" {
+    if env.name != "production" {
       try LoggingSystem.bootstrap(from: &env)
     }
 

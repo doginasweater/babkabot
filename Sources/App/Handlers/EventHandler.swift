@@ -11,7 +11,7 @@ struct EventHandler: Sendable {
     Task {
       switch event.data {
         case .interactionCreate(let interaction):
-          await DefineHandler(event: interaction, client: client).handle()
+          await InteractionHandler(event: interaction, client: client).handle()
         default: break
       }
     }

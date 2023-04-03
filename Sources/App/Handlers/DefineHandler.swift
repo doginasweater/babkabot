@@ -9,19 +9,15 @@ struct DefineHandler {
 
   let client: HTTPClient
   let event: Interaction
+  let data: Interaction.ApplicationCommand
 
-  init(event: Interaction, client: HTTPClient) {
+  init(event: Interaction, client: HTTPClient, data: Interaction.ApplicationCommand) {
     self.event = event
     self.client = client
+    self.data = data
   }
 
   func handle() async {
-    guard case let .applicationCommand(data) = event.data,
-      CommandKind(name: data.name) != nil else {
-        logger.error("Unrecognized command")
-        return await sendUnknownCommandFailure()
-      }
-
     let options = data.options ?? []
 
     if options.isEmpty {
@@ -99,22 +95,6 @@ struct DefineHandler {
               description: response
             )
           ]
-        )
-      )
-    )
-  }
-
-  private func sendUnknownCommandFailure() async {
-    await discordService.respondToInteraction(
-      id: event.id,
-      token: event.token,
-      payload: .init(
-        type: .channelMessageWithSource,
-        data: .init(
-          embeds: [
-            .init(description: "Failed to resolve the interaction name :(")
-          ],
-          flags: [.ephemeral]
         )
       )
     )

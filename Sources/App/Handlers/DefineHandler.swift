@@ -43,13 +43,12 @@ struct DefineHandler {
     let response = try await client.execute(request, timeout: .seconds(30), logger: self.logger)
 
     guard response.status.code == 200 else {
-      logger.error("Request for \(word) failed", metadata: [
-        "status": "\(response.status.code)"
-      ])
-
       if response.status.code == 404 {
         await sendFailure(message: "Unable to find definition for \(word). Does that word exist? Did you spell it right?")
       } else {
+        logger.error("Request for \(word) failed", metadata: [
+          "status": "\(response.status.code)"
+        ])
         await sendFailure(message: "Unable to find definition for \(word). Seems like it might be an API error")
       }
 
@@ -57,11 +56,9 @@ struct DefineHandler {
     }
 
     let body = try await response.body.collect(upTo: 1 << 24)
-
     let apiResponse = try JSONDecoder().decode([ApiResponse].self, from: body)
 
     guard apiResponse.count > 0 else {
-      logger.error("No meanings found for \(word)")
       await sendFailure(message: "No meanings found for \(word)")
       return
     }

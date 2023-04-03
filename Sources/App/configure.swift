@@ -49,13 +49,12 @@ func configureDiscord(_ app: Application) -> BotGatewayManager {
 func configureDatabase(_ app: Application) async throws {
   switch app.environment {
     case .production:
-      app.databases.use(.postgres(
-          hostname: Environment.get("DATABASE_HOST") ?? "localhost",
-          port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? PostgresConfiguration.ianaPortNumber,
-          username: Environment.get("DATABASE_USERNAME") ?? "vapor_username",
-          password: Environment.get("DATABASE_PASSWORD") ?? "vapor_password",
-          database: Environment.get("DATABASE_NAME") ?? "vapor_database"
-      ), as: .psql)
+      guard let databaseURL = Environment.get("DATABASE_URL") else {
+        app.logger.error("Unable to find database url!")
+        return app.shutdown()
+      }
+
+      try app.databases.use(.postgres(url: databaseURL), as: .psql)
     default:
       app.databases.use(.sqlite(.file("babka.db")), as: .sqlite)
   }

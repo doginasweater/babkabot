@@ -34,7 +34,7 @@ struct DefineHandler {
       try await getWordDefinition(word)
     } catch {
       logger.report("Unable to get definition for \(word)", error: error)
-      await sendFailure(message: "Error occurred while getting definition")
+      await sendFailure(message: "Error occurred while getting definition for **\(word)**")
     }
   }
 
@@ -44,12 +44,12 @@ struct DefineHandler {
 
     guard response.status.code == 200 else {
       if response.status.code == 404 {
-        await sendFailure(message: "Unable to find definition for \(word). Does that word exist? Did you spell it right?")
+        await sendFailure(message: "Unable to find definition for **\(word)**. Does that word exist? Did you spell it right?")
       } else {
         logger.error("Request for \(word) failed", metadata: [
           "status": "\(response.status.code)"
         ])
-        await sendFailure(message: "Unable to find definition for \(word). Seems like it might be an API error")
+        await sendFailure(message: "Unable to find definition for **\(word)**. Seems like it might be an API error")
       }
 
       return
@@ -59,7 +59,7 @@ struct DefineHandler {
     let apiResponse = try JSONDecoder().decode([ApiResponse].self, from: body)
 
     guard apiResponse.count > 0 else {
-      await sendFailure(message: "No meanings found for \(word)")
+      await sendFailure(message: "No meanings found for **\(word)**")
       return
     }
 

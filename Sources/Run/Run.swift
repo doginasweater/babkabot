@@ -23,7 +23,12 @@ extension Application {
 enum Run {
   static func main() async throws {
     var env = try Environment.detect()
-    try LoggingSystem.bootstrap(from: &env)
+
+    // In prod, we're going to use the discord logger
+    if !env.isRelease || env.name == "production" {
+      try LoggingSystem.bootstrap(from: &env)
+    }
+
     let app = Application(env)
     defer { app.shutdown() }
 

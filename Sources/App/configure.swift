@@ -59,7 +59,7 @@ func configureLogger(_ app: Application) async throws {
       ],
       extraMetadata: [.warning, .error, .critical],
       disabledLogLevels: [.debug, .trace],
-      disabledInDebug: false
+      disabledInDebug: true
     )
   )
 
@@ -91,11 +91,11 @@ func configureDatabase(_ app: Application) async throws {
 }
 
 public func configure(_ app: Application) async throws {
+  try await configureLogger(app)
   try await configureDatabase(app)
 
   let bot = configureDiscord(app)
 
-  try await configureLogger(app)
   await DiscordService.shared.initialize(client: bot.client)
   await GatewayService.shared.initialize(bot: bot)
 

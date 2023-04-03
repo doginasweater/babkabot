@@ -1,5 +1,4 @@
 bin/
-fly.toml
 **/*.db
 **/*.db-journal
 Packages

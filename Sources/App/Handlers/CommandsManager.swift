@@ -5,7 +5,8 @@ struct CommandsManager {
   func registerCommands() async {
     await DiscordService.shared.writeCommands([
       .define,
-      .presence
+      .presence,
+      .sunny
     ])
   }
 }
@@ -13,18 +14,13 @@ struct CommandsManager {
 enum CommandKind {
   case define
   case presence
-
-  var isEphemeral: Bool {
-    switch self {
-      case .define: return true
-      case .presence: return true
-    }
-  }
+  case sunny
 
   init? (name: String) {
     switch name {
       case "define": self = .define
       case "presence": self = .presence
+      case "sunny": self = .sunny
       default: return nil
     }
   }
@@ -65,6 +61,21 @@ private extension RequestBody.ApplicationCommandCreate {
           .init(name: "game", value: .string("game")),
           .init(name: "listening", value: .string("listening"))
         ]
+      )
+    ]
+  )
+}
+
+private extension RequestBody.ApplicationCommandCreate {
+  static let sunny = RequestBody.ApplicationCommandCreate(
+    name: "sunny",
+    description: "Make an It's Always Sunny in Philadelphia title card",
+    options: [
+      .init(
+        type: .string,
+        name: "title",
+        description: "The name of the episode",
+        required: true
       )
     ]
   )

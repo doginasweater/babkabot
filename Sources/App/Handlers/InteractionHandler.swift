@@ -26,6 +26,8 @@ struct InteractionHandler {
         await DefineHandler(event: event, client: client, data: data).handle()
       case .presence:
         await PresenceHandler(event: event, data: data).handle()
+      case .sunny:
+        await SunnyHandler(event: event, data: data, client: client).handle()
       default:
         logger.error("Unrecognized command")
         return await sendUnknownCommandFailure()

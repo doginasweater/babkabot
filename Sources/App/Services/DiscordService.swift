@@ -67,4 +67,79 @@ actor DiscordService {
         ])
     }
   }
+
+  func sendMessage(channelId: String, message: String) async {
+    do {
+      try await discordClient.createMessage(
+        channelId: channelId,
+        payload: .init(content: message)
+      ).guardSuccess()
+    } catch {
+      logger.report(
+        "Couldn't send message", error: error,
+        metadata: [
+          "channelId": .string(channelId),
+          "payload": "\(message)",
+        ])
+    }
+  }
+
+  func sendReply(channelId: String, message: String, messageId: String, guildId: String?) async {
+    do {
+      try await discordClient.createMessage(
+        channelId: channelId,
+        payload: .init(
+          content: message,
+          message_reference: .init(
+            message_id: messageId,
+            channel_id: channelId,
+            guild_id: guildId,
+            fail_if_not_exists: false
+          )
+        )
+      ).guardSuccess()
+    } catch {
+      logger.report(
+        "Couldn't send reply", error: error,
+        metadata: [
+          "channelId": .string(channelId),
+          "payload": "\(message)",
+        ])
+    }
+  }
+
+  func addReaction(channelId: String, messageId: String, emoji: String) async {
+    do {
+      try await discordClient.addOwnMessageReaction(
+        channelId: channelId,
+        messageId: messageId,
+        emoji: .unicodeEmoji(emoji)
+      ).guardSuccess()
+    } catch {
+      logger.report(
+        "Unable to add reaction to message", error: error,
+        metadata: [
+          "channelId": .string(channelId),
+          "messageId": .string(messageId),
+        ])
+    }
+  }
+
+  func editMessage(channelId: String, messageId: String, newContent: String) async {
+    do {
+      try await discordClient.updateMessage(
+        channelId: channelId,
+        messageId: messageId,
+        payload: .init(content: newContent)
+      ).guardSuccess()
+    } catch {
+      logger.report(
+        "Unable to modify message", error: error,
+        metadata: [
+          "channelId": .string(channelId),
+          "messageId": .string(messageId),
+          "content": .string(newContent),
+        ])
+    }
+  }
 }

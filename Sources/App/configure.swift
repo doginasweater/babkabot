@@ -24,7 +24,7 @@ func configureDiscord(_ app: Application) -> BotGatewayManager {
       status: .online,
       afk: false
     ),
-    intents: []
+    intents: [.guildMessages, .guildMessageReactions, .messageContent]
   )
 
   return bot

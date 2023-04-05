@@ -28,9 +28,9 @@ final class Tag: Model, Content {
   @Timestamp(key: "deleted_at", on: .delete)
   var deletedAt: Date?
 
-  init() { }
+  init() {}
 
-  init (
+  init(
     id: UUID? = nil,
     name: String,
     fromServer: String,

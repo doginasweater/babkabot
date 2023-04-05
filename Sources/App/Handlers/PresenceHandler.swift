@@ -47,13 +47,13 @@ struct PresenceHandler {
 
   private func toKind(from: String) -> Gateway.Activity.Kind {
     switch from {
-      case "game": return .game
-      case "streaming": return .streaming
-      case "listening": return .listening
-      case "watching": return .watching
-      case "custom": return .custom
-      case "competing": return .competing
-      default: return .game
+    case "game": return .game
+    case "streaming": return .streaming
+    case "listening": return .listening
+    case "watching": return .watching
+    case "custom": return .custom
+    case "competing": return .competing
+    default: return .game
     }
   }
 

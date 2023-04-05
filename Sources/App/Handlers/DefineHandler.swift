@@ -44,12 +44,18 @@ struct DefineHandler {
 
     guard response.status.code == 200 else {
       if response.status.code == 404 {
-        await sendFailure(message: "Unable to find definition for **\(word)**. Does that word exist? Did you spell it right?")
+        await sendFailure(
+          message:
+            "Unable to find definition for **\(word)**. Does that word exist? Did you spell it right?"
+        )
       } else {
-        logger.error("Request for \(word) failed", metadata: [
-          "status": "\(response.status.code)"
-        ])
-        await sendFailure(message: "Unable to find definition for **\(word)**. Seems like it might be an API error")
+        logger.error(
+          "Request for \(word) failed",
+          metadata: [
+            "status": "\(response.status.code)"
+          ])
+        await sendFailure(
+          message: "Unable to find definition for **\(word)**. Seems like it might be an API error")
       }
 
       return
@@ -63,7 +69,8 @@ struct DefineHandler {
       return
     }
 
-    let dictResponse = apiResponse
+    let dictResponse =
+      apiResponse
       .compactMap { $0 }
       .compactMap { $0.meanings }
       .flatMap { $0 }

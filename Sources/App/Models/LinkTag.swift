@@ -13,7 +13,7 @@ final class LinkTag: Model, Content {
   @Parent(key: "tag_id")
   var tag: Tag
 
-  init() { }
+  init() {}
 
   init(
     id: UUID? = nil,

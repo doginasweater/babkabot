@@ -10,9 +10,9 @@ struct EventHandler: Sendable {
   func handle() {
     Task {
       switch event.data {
-        case .interactionCreate(let interaction):
-          await InteractionHandler(event: interaction, client: client).handle()
-        default: break
+      case .interactionCreate(let interaction):
+        await InteractionHandler(event: interaction, client: client).handle()
+      default: break
       }
     }
   }

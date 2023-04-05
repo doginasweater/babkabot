@@ -19,28 +19,34 @@ actor DiscordService {
         .bulkSetApplicationCommands(payload: commands)
         .guardSuccess()
     } catch {
-      logger.report("Couldn't overwrite application commands.", error: error, metadata: [
-        "commands": "\(commands)"
-      ])
+      logger.report(
+        "Couldn't overwrite application commands.", error: error,
+        metadata: [
+          "commands": "\(commands)"
+        ])
     }
   }
 
   @discardableResult
-  func respondToInteraction(id: String, token: String, payload: RequestBody.InteractionResponse) async -> Bool {
+  func respondToInteraction(id: String, token: String, payload: RequestBody.InteractionResponse)
+    async -> Bool
+  {
     do {
       try await discordClient.createInteractionResponse(
-          id: id,
-          token: token,
-          payload: payload
+        id: id,
+        token: token,
+        payload: payload
       ).guardSuccess()
 
       return true
     } catch {
-      logger.report("Couldn't send interaction response", error: error, metadata: [
+      logger.report(
+        "Couldn't send interaction response", error: error,
+        metadata: [
           "id": .string(id),
           "token": .string(token),
-          "payload": "\(payload)"
-      ])
+          "payload": "\(payload)",
+        ])
 
       return false
     }
@@ -53,10 +59,12 @@ actor DiscordService {
         payload: payload
       ).guardSuccess()
     } catch {
-      logger.report("Couldn't send interaction edit", error: error, metadata: [
-        "token": .string(token),
-        "payload": "\(payload)"
-      ])
+      logger.report(
+        "Couldn't send interaction edit", error: error,
+        metadata: [
+          "token": .string(token),
+          "payload": "\(payload)",
+        ])
     }
   }
 }

@@ -6,7 +6,7 @@ struct CommandsManager {
     await DiscordService.shared.writeCommands([
       .define,
       .presence,
-      .sunny
+      .sunny,
     ])
   }
 }
@@ -16,18 +16,18 @@ enum CommandKind {
   case presence
   case sunny
 
-  init? (name: String) {
+  init?(name: String) {
     switch name {
-      case "define": self = .define
-      case "presence": self = .presence
-      case "sunny": self = .sunny
-      default: return nil
+    case "define": self = .define
+    case "presence": self = .presence
+    case "sunny": self = .sunny
+    default: return nil
     }
   }
 }
 
-private extension RequestBody.ApplicationCommandCreate {
-  static let define = RequestBody.ApplicationCommandCreate(
+extension RequestBody.ApplicationCommandCreate {
+  fileprivate static let define = RequestBody.ApplicationCommandCreate(
     name: "define",
     description: "Define a word!",
     options: [
@@ -41,8 +41,8 @@ private extension RequestBody.ApplicationCommandCreate {
   )
 }
 
-private extension RequestBody.ApplicationCommandCreate {
-  static let presence = RequestBody.ApplicationCommandCreate(
+extension RequestBody.ApplicationCommandCreate {
+  fileprivate static let presence = RequestBody.ApplicationCommandCreate(
     name: "presence",
     description: "What is babkabot doing?",
     options: [
@@ -59,15 +59,15 @@ private extension RequestBody.ApplicationCommandCreate {
         required: true,
         choices: [
           .init(name: "game", value: .string("game")),
-          .init(name: "listening", value: .string("listening"))
+          .init(name: "listening", value: .string("listening")),
         ]
-      )
+      ),
     ]
   )
 }
 
-private extension RequestBody.ApplicationCommandCreate {
-  static let sunny = RequestBody.ApplicationCommandCreate(
+extension RequestBody.ApplicationCommandCreate {
+  fileprivate static let sunny = RequestBody.ApplicationCommandCreate(
     name: "sunny",
     description: "Make an It's Always Sunny in Philadelphia title card",
     options: [

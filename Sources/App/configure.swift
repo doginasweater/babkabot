@@ -38,7 +38,9 @@ func configureLogger(_ app: Application) async throws {
     let errorRole = Environment.get("ERROR_ROLE"),
     let criticalRole = Environment.get("CRITICAL_ROLE")
   else {
-    app.logger.warning("Unable to load environment variables required for discord logging. Falling back to vapor logging.")
+    app.logger.warning(
+      "Unable to load environment variables required for discord logging. Falling back to vapor logging."
+    )
     return
   }
 
@@ -55,7 +57,7 @@ func configureLogger(_ app: Application) async throws {
       mentions: [
         .warning: .role(warningRole),
         .error: .role(errorRole),
-        .critical: .role(criticalRole)
+        .critical: .role(criticalRole),
       ],
       extraMetadata: [.warning, .error, .critical],
       disabledLogLevels: [.debug, .trace],
@@ -71,15 +73,15 @@ func configureLogger(_ app: Application) async throws {
 
 func configureDatabase(_ app: Application) async throws {
   switch app.environment {
-    case .production:
-      guard let databaseURL = Environment.get("DATABASE_URL") else {
-        app.logger.error("Unable to find database url!")
-        return app.shutdown()
-      }
+  case .production:
+    guard let databaseURL = Environment.get("DATABASE_URL") else {
+      app.logger.error("Unable to find database url!")
+      return app.shutdown()
+    }
 
-      try app.databases.use(.postgres(url: databaseURL), as: .psql)
-    default:
-      app.databases.use(.sqlite(.file("babka.db")), as: .sqlite)
+    try app.databases.use(.postgres(url: databaseURL), as: .psql)
+  default:
+    app.databases.use(.sqlite(.file("babka.db")), as: .sqlite)
   }
 
   app.migrations.add(Link.Migration())

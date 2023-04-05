@@ -39,9 +39,11 @@ struct SunnyHandler {
     do {
       try await getTitleCard(title)
     } catch {
-      logger.error("Title card request failed", metadata: [
-        "title": "\(title)"
-      ])
+      logger.error(
+        "Title card request failed",
+        metadata: [
+          "title": "\(title)"
+        ])
 
       await sendFailure(message: "Unable to generate a title card :(")
     }
@@ -57,10 +59,12 @@ struct SunnyHandler {
     let response = try await client.execute(request, timeout: .seconds(30), logger: self.logger)
 
     guard response.status.code == 200 else {
-      logger.error("Title card request failed", metadata: [
-        "status": "\(response.status.code)",
-        "body": "\(response.body)"
-      ])
+      logger.error(
+        "Title card request failed",
+        metadata: [
+          "status": "\(response.status.code)",
+          "body": "\(response.body)",
+        ])
 
       await sendFailure(message: "Unable to generate a title card :(")
       return
@@ -74,7 +78,7 @@ struct SunnyHandler {
       payload: .init(
         type: .channelMessageWithSource,
         data: .init(
-          embeds: [ .init(title: "Title card", image: .init(url: .attachment(name: "image.png"))) ],
+          embeds: [.init(title: "Title card", image: .init(url: .attachment(name: "image.png")))],
           files: [.init(data: body, filename: "image.png")]
         )
       )

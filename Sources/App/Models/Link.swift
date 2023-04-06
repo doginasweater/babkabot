@@ -22,6 +22,9 @@ final class Link: Model, Content {
   @Field(key: "from_channel")
   var fromChannel: String
 
+  @Enum(key: "privacy")
+  var privacy: Privacy
+
   @Siblings(through: LinkTag.self, from: \.$link, to: \.$tag)
   var tags: [Tag]
 

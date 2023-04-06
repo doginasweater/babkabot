@@ -88,6 +88,7 @@ func configureDatabase(_ app: Application) async throws {
   app.migrations.add(Tag.Migration())
   app.migrations.add(LinkTag.Migration())
   app.migrations.add(Setting.Migration())
+  app.migrations.add(Privacy.Migration())
 
   try await app.autoMigrate()
 }

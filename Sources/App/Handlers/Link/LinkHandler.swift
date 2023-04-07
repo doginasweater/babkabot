@@ -69,7 +69,7 @@ struct LinkHandler: Handler {
         payload: .init(
           type: .channelMessageWithSource,
           data: .init(
-            content: "Saved link!"
+            content: "Saved link to \(url)!"
           )
         )
       )
@@ -112,20 +112,25 @@ struct LinkHandler: Handler {
         return
       }
 
+      let embeds =
+        links.isEmpty
+        ? [.init(title: "No links stored")]
+        : links.map { link in
+          Embed(
+            title: link.url,
+            description: """
+              \(link.title)
+              """
+          )
+        }
+
       await svc.respondToInteraction(
         id: event.id,
         token: event.token,
         payload: .init(
           type: .channelMessageWithSource,
           data: .init(
-            embeds: links.map { link in
-              Embed(
-                title: link.url,
-                description: """
-                  \(link.title)
-                  """
-              )
-            }
+            embeds: embeds
           )
         )
       )

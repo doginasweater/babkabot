@@ -3,30 +3,21 @@ import DiscordBM
 import Foundation
 import Logging
 
-struct DefineHandler {
-  var logger = Logger(label: "DefineHandler")
-  var svc: DiscordService { .shared }
-
-  let client: HTTPClient
+struct DefineHandler: Handler {
   let event: Interaction
   let data: Interaction.ApplicationCommand
-
-  init(event: Interaction, client: HTTPClient, data: Interaction.ApplicationCommand) {
-    self.event = event
-    self.client = client
-    self.data = data
-  }
+  let client: HTTPClient
 
   func handle() async {
     let options = data.options ?? []
 
     if options.isEmpty {
       logger.error("Options is empty")
-      await svc.sendFailure(event: event, message: "You didn't give me a word to define")
+      await sendFailure(message: "You didn't give me a word to define")
     }
 
     guard let word = options[0].value?.asString else {
-      await svc.sendFailure(event: event, message: "You didn't give me a word to define")
+      await sendFailure(message: "You didn't give me a word to define")
       return
     }
 
@@ -34,7 +25,7 @@ struct DefineHandler {
       try await getWordDefinition(word)
     } catch {
       logger.report("Unable to get definition for \(word)", error: error)
-      await svc.sendFailure(event: event, message: "Error occurred while getting definition for **\(word)**")
+      await sendFailure(message: "Error occurred while getting definition for **\(word)**")
     }
   }
 
@@ -44,8 +35,7 @@ struct DefineHandler {
 
     guard response.status.code == 200 else {
       if response.status.code == 404 {
-        await svc.sendFailure(
-          event: event,
+        await sendFailure(
           message:
             "Unable to find definition for **\(word)**. Does that word exist? Did you spell it right?"
         )
@@ -55,8 +45,7 @@ struct DefineHandler {
           metadata: [
             "status": "\(response.status.code)"
           ])
-        await svc.sendFailure(
-          event: event,
+        await sendFailure(
           message: "Unable to find definition for **\(word)**. Seems like it might be an API error")
       }
 

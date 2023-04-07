@@ -7,19 +7,10 @@ struct SunnyRequest: Codable {
   var text: String
 }
 
-struct SunnyHandler {
-  var logger = Logger(label: "SunnyHandler")
-  var discordService: DiscordService { .shared }
-
-  let client: HTTPClient
+struct SunnyHandler: Handler {
   let event: Interaction
   let data: Interaction.ApplicationCommand
-
-  init(event: Interaction, data: Interaction.ApplicationCommand, client: HTTPClient) {
-    self.event = event
-    self.data = data
-    self.client = client
-  }
+  let client: HTTPClient
 
   func handle() async {
     let options = data.options ?? []
@@ -72,7 +63,7 @@ struct SunnyHandler {
 
     let body = try await response.body.collect(upTo: 1 << 24)
 
-    await discordService.respondToInteraction(
+    await svc.respondToInteraction(
       id: event.id,
       token: event.token,
       payload: .init(
@@ -80,21 +71,6 @@ struct SunnyHandler {
         data: .init(
           embeds: [.init(title: "Title card", image: .init(url: .attachment(name: "image.png")))],
           files: [.init(data: body, filename: "image.png")]
-        )
-      )
-    )
-  }
-
-  private func sendFailure(message: String) async {
-    await discordService.respondToInteraction(
-      id: event.id,
-      token: event.token,
-      payload: .init(
-        type: .channelMessageWithSource,
-        data: .init(
-          embeds: [
-            .init(description: message)
-          ]
         )
       )
     )

@@ -7,13 +7,8 @@ struct InteractionHandler {
   var logger = Logger(label: String(describing: InteractionHandler.self))
   var discordService: DiscordService { .shared }
 
-  let client: HTTPClient
   let event: Interaction
-
-  init(event: Interaction, client: HTTPClient) {
-    self.event = event
-    self.client = client
-  }
+  let client: HTTPClient
 
   func handle() async {
     guard case let .applicationCommand(data) = event.data else {
@@ -23,9 +18,9 @@ struct InteractionHandler {
 
     switch CommandKind(name: data.name) {
     case .define:
-      await DefineHandler(event: event, client: client, data: data).handle()
+      await DefineHandler(event: event, data: data, client: client).handle()
     case .presence:
-      await PresenceHandler(event: event, data: data).handle()
+      await PresenceHandler(event: event, data: data, client: client).handle()
     case .sunny:
       await SunnyHandler(event: event, data: data, client: client).handle()
     case .link:

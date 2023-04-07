@@ -4,19 +4,10 @@ import Foundation
 import Logging
 import SwiftPrettyPrint
 
-struct LinkHandler {
-  var logger = Logger(label: String(describing: LinkHandler.self))
-  var svc: DiscordService { .shared }
-
-  let client: HTTPClient
+struct LinkHandler: Handler {
   let event: Interaction
   let data: Interaction.ApplicationCommand
-
-  init(event: Interaction, data: Interaction.ApplicationCommand, client: HTTPClient) {
-    self.event = event
-    self.data = data
-    self.client = client
-  }
+  let client: HTTPClient
 
   func handle() async {
     let options = data.options ?? []
@@ -32,7 +23,7 @@ struct LinkHandler {
     case "search":
       await handleSearch(options[0].options)
     default:
-      await svc.sendFailure(event: event, message: "Unknown subcommand")
+      await sendFailure(message: "Unknown subcommand")
     }
   }
 

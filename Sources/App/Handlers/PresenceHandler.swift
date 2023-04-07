@@ -3,37 +3,31 @@ import DiscordBM
 import Foundation
 import Logging
 
-struct PresenceHandler {
-  var logger = Logger(label: "PresenceHandler")
-  var discordService: DiscordService { .shared }
+struct PresenceHandler: Handler {
   var gatewayService: GatewayService { .shared }
 
   let event: Interaction
   let data: Interaction.ApplicationCommand
-
-  init(event: Interaction, data: Interaction.ApplicationCommand) {
-    self.event = event
-    self.data = data
-  }
+  let client: HTTPClient
 
   func handle() async {
     let options = data.options ?? []
 
     if options.isEmpty {
       logger.error("Options is empty")
-      await sendFailure(message: "What is the bot playing?")
+      await svc.sendFailure(event: event, message: "What is the bot playing?")
     }
 
     guard
       let activity = options.first(where: { $0.name == "activity" })?.value?.asString,
       let type = options.first(where: { $0.name == "type" })?.value?.asString
     else {
-      await sendFailure(message: "What is the bot playing?")
+      await svc.sendFailure(event: event, message: "What is the bot playing?")
       return
     }
 
     await gatewayService.updatePresence(name: activity, type: toKind(from: type), status: .online)
-    await discordService.respondToInteraction(
+    await svc.respondToInteraction(
       id: event.id,
       token: event.token,
       payload: .init(
@@ -55,20 +49,5 @@ struct PresenceHandler {
     case "competing": return .competing
     default: return .game
     }
-  }
-
-  private func sendFailure(message: String) async {
-    await discordService.respondToInteraction(
-      id: event.id,
-      token: event.token,
-      payload: .init(
-        type: .channelMessageWithSource,
-        data: .init(
-          embeds: [
-            .init(description: message)
-          ]
-        )
-      )
-    )
   }
 }

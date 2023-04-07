@@ -5,6 +5,15 @@ enum Privacy: String, Codable {
   case global
   case serverOnly
   case personal
+
+  init(_ name: String?) {
+    switch name {
+    case "global": self = .global
+    case "serverOnly": self = .serverOnly
+    case "personal": self = .personal
+    default: self = .serverOnly
+    }
+  }
 }
 
 extension Privacy {

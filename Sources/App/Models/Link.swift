@@ -46,7 +46,8 @@ final class Link: Model, Content {
     createdBy: String,
     fromServer: String,
     fromChannel: String,
-    createdAt: Date? = nil
+    createdAt: Date? = nil,
+    privacy: Privacy = .serverOnly
   ) {
     self.id = id
     self.title = title
@@ -55,6 +56,7 @@ final class Link: Model, Content {
     self.fromServer = fromServer
     self.fromChannel = fromChannel
     self.createdAt = createdAt
+    self.privacy = privacy
   }
 }
 

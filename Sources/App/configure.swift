@@ -101,6 +101,7 @@ public func configure(_ app: Application) async throws {
 
   await DiscordService.shared.initialize(client: bot.client)
   await GatewayService.shared.initialize(bot: bot)
+  await LinkRepo.shared.initialize(db: app.db)
 
   await bot.addEventHandler { event in
     EventHandler(

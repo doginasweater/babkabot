@@ -5,9 +5,10 @@ import Logging
 protocol Handler {
   var logger: Logger { get }
   var svc: DiscordService { get }
-  var client: HTTPClient { get }
+
   var event: Interaction { get }
   var data: Interaction.ApplicationCommand { get }
+  var client: HTTPClient { get }
 
   func handle() async
 }

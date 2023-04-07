@@ -5,7 +5,7 @@ import Logging
 
 struct DefineHandler {
   var logger = Logger(label: "DefineHandler")
-  var discordService: DiscordService { .shared }
+  var svc: DiscordService { .shared }
 
   let client: HTTPClient
   let event: Interaction
@@ -22,11 +22,11 @@ struct DefineHandler {
 
     if options.isEmpty {
       logger.error("Options is empty")
-      await sendFailure(message: "You didn't give me a word to define")
+      await svc.sendFailure(event: event, message: "You didn't give me a word to define")
     }
 
     guard let word = options[0].value?.asString else {
-      await sendFailure(message: "You didn't give me a word to define")
+      await svc.sendFailure(event: event, message: "You didn't give me a word to define")
       return
     }
 
@@ -34,7 +34,7 @@ struct DefineHandler {
       try await getWordDefinition(word)
     } catch {
       logger.report("Unable to get definition for \(word)", error: error)
-      await sendFailure(message: "Error occurred while getting definition for **\(word)**")
+      await svc.sendFailure(event: event, message: "Error occurred while getting definition for **\(word)**")
     }
   }
 
@@ -44,7 +44,8 @@ struct DefineHandler {
 
     guard response.status.code == 200 else {
       if response.status.code == 404 {
-        await sendFailure(
+        await svc.sendFailure(
+          event: event,
           message:
             "Unable to find definition for **\(word)**. Does that word exist? Did you spell it right?"
         )
@@ -54,7 +55,8 @@ struct DefineHandler {
           metadata: [
             "status": "\(response.status.code)"
           ])
-        await sendFailure(
+        await svc.sendFailure(
+          event: event,
           message: "Unable to find definition for **\(word)**. Seems like it might be an API error")
       }
 
@@ -65,7 +67,7 @@ struct DefineHandler {
     let apiResponse = try JSONDecoder().decode([ApiResponse].self, from: body)
 
     guard apiResponse.count > 0 else {
-      await sendFailure(message: "No meanings found for **\(word)**")
+      await svc.sendFailure(event: event, message: "No meanings found for **\(word)**")
       return
     }
 
@@ -93,7 +95,7 @@ struct DefineHandler {
   }
 
   private func respond(_ word: String, _ response: String) async {
-    await discordService.respondToInteraction(
+    await svc.respondToInteraction(
       id: event.id,
       token: event.token,
       payload: .init(
@@ -110,23 +112,8 @@ struct DefineHandler {
     )
   }
 
-  private func sendFailure(message: String) async {
-    await discordService.respondToInteraction(
-      id: event.id,
-      token: event.token,
-      payload: .init(
-        type: .channelMessageWithSource,
-        data: .init(
-          embeds: [
-            .init(description: message)
-          ]
-        )
-      )
-    )
-  }
-
   private func acknowledge(isEphemeral: Bool) async -> Bool {
-    await discordService.respondToInteraction(
+    await svc.respondToInteraction(
       id: event.id,
       token: event.token,
       payload: .init(

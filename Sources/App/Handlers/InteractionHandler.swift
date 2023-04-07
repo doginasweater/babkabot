@@ -4,7 +4,7 @@ import Foundation
 import Logging
 
 struct InteractionHandler {
-  var logger = Logger(label: "InteractionHandler")
+  var logger = Logger(label: String(describing: InteractionHandler.self))
   var discordService: DiscordService { .shared }
 
   let client: HTTPClient
@@ -28,6 +28,8 @@ struct InteractionHandler {
       await PresenceHandler(event: event, data: data).handle()
     case .sunny:
       await SunnyHandler(event: event, data: data, client: client).handle()
+    case .link:
+      await LinkHandler(event: event, data: data, client: client).handle()
     default:
       logger.error("Unrecognized command")
       return await sendUnknownCommandFailure()

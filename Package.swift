@@ -15,7 +15,6 @@ let package = Package(
     .package(url: "https://github.com/MahdiBM/DiscordBM", from: "1.0.0-beta.1"),
     .package(url: "https://github.com/swift-server/async-http-client.git", from: "1.9.0"),
     .package(url: "https://github.com/YusukeHosonuma/SwiftPrettyPrint.git", .upToNextMajor(from: "1.2.0")),
-    .package(path: "../swift-sodium"),
   ],
   targets: [
     .target(
@@ -28,7 +27,6 @@ let package = Package(
         .product(name: "DiscordBM", package: "DiscordBM"),
         .product(name: "AsyncHTTPClient", package: "async-http-client"),
         "SwiftPrettyPrint",
-        .product(name: "Sodium", package: "swift-sodium"),
       ],
       swiftSettings: [
         // Enable better optimizations when building in Release configuration. Despite the use of

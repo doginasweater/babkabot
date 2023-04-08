@@ -38,10 +38,10 @@ struct LinkHandler: Handler {
   }
 
   func handleAdd(_ options: [Interaction.ApplicationCommand.Option]) async {
-    let url = options.first(where: { $0.name == "url" })?.value?.asString
-    let description = options.first(where: { $0.name == "description" })?.value?.asString
-    // let tags = options.first(where: { $0.name == "tags" })?.value?.asString
-    let privacy = Privacy(options.first(where: { $0.name == "privacy" })?.value?.asString)
+    let url = options.first(where: { $0.name == AddOption.url.v })?.value?.asString
+    let description = options.first(where: { $0.name == AddOption.description.v })?.value?.asString
+    // let tags = options.first(where: { $0.name == AddOption.tags.v })?.value?.asString
+    let privacy = Privacy(options.first(where: { $0.name == AddOption.privacy.v })?.value?.asString)
     let serverId = event.guild_id
     let channelId = event.channel_id
     let userId = event.member?.user?.id
@@ -88,7 +88,7 @@ struct LinkHandler: Handler {
   }
 
   func handleList(_ options: [Interaction.ApplicationCommand.Option]) async {
-    let privacy = Privacy(options.first(where: { $0.name == "privacy" })?.value?.asString)
+    let privacy = Privacy(options.first(where: { $0.name == "filter" })?.value?.asString)
 
     do {
       var links: [Link]
@@ -114,7 +114,7 @@ struct LinkHandler: Handler {
 
       let embeds =
         links.isEmpty
-        ? [.init(title: "No links stored")]
+        ? [.init(title: "\(event.member?.user?.username ?? "This person") has no links stored")]
         : links.map { link in
           Embed(
             title: link.url,

@@ -7,30 +7,30 @@ extension RequestBody.ApplicationCommandCreate {
     options: [
       .init(
         type: .subCommand,
-        name: "add",
+        name: LinkCommand.add.v,
         description: "Add a link to be saved",
         options: [
           .init(
             type: .string,
-            name: "url",
+            name: AddOption.url.v,
             description: "The url of the link",
             required: true
           ),
           .init(
             type: .string,
-            name: "description",
+            name: AddOption.description.v,
             description: "A description for the link",
             required: false
           ),
           .init(
             type: .string,
-            name: "tags",
+            name: AddOption.tags.v,
             description: "Comma-separated list of tags",
             required: false
           ),
           .init(
             type: .string,
-            name: "privacy",
+            name: AddOption.privacy.v,
             description: "How visible you'd like your link to be",
             required: false,
             choices: [
@@ -43,7 +43,7 @@ extension RequestBody.ApplicationCommandCreate {
       ),
       .init(
         type: .subCommand,
-        name: "search",
+        name: LinkCommand.search.v,
         description: "Search for a link",
         options: [
           .init(
@@ -56,7 +56,7 @@ extension RequestBody.ApplicationCommandCreate {
       ),
       .init(
         type: .subCommand,
-        name: "list",
+        name: LinkCommand.search.v,
         description: "List all links",
         options: [
           .init(

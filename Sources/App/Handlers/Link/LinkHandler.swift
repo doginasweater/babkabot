@@ -49,7 +49,7 @@ struct LinkHandler: Handler {
     let privacy = Privacy(options.first(where: { $0.name == AddOption.privacy.v })?.value?.asString)
     let serverId = event.guild_id
     let channelId = event.channel_id
-    let userId = event.member?.user?.id
+    let userId = event.member?.user?.username
     let rawTags = options.first(where: { $0.name == AddOption.tags.v })?.value?.asString
 
     let link = Link(
@@ -123,7 +123,9 @@ struct LinkHandler: Handler {
             title: link.title,
             type: .link,
             description: """
+              URL: \(link.url)
               Tags: \(link.tags.isEmpty ? "None" : String(link.tags.map { $0.name }.joined(by: ", ")))
+              Created by \(link.createdBy) at \(link.createdAt)
               """,
             url: link.url
           )

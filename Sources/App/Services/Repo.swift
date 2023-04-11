@@ -16,14 +16,16 @@ actor Repo {
     switch filter {
     case .personal:
       return try await Link.query(on: db)
+        .with(\.$tags)
         .filter(\.$createdBy == id)
         .all()
     case .serverOnly:
       return try await Link.query(on: db)
+        .with(\.$tags)
         .filter(\.$fromServer == id)
         .all()
     case .global:
-      return try await Link.query(on: db).all()
+      return try await Link.query(on: db).with(\.$tags).all()
     }
   }
 

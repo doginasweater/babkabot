@@ -120,10 +120,12 @@ struct LinkHandler: Handler {
         ? [.init(title: "\(event.member?.user?.username ?? "This person") has no links stored")]
         : links.map { link in
           Embed(
-            title: link.url,
+            title: link.title,
+            type: .link,
             description: """
-              \(link.title)
-              """
+              Tags: \(link.tags.isEmpty ? "None" : String(link.tags.map { $0.name }.joined(by: ", ")))
+              """,
+            url: link.url
           )
         }
 

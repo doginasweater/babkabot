@@ -56,7 +56,7 @@ extension RequestBody.ApplicationCommandCreate {
       ),
       .init(
         type: .subCommand,
-        name: LinkCommand.search.v,
+        name: LinkCommand.list.v,
         description: "List all links",
         options: [
           .init(

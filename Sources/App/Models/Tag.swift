@@ -38,13 +38,15 @@ final class Tag: Model, Content {
     name: String,
     fromServer: String,
     fromChannel: String? = nil,
-    createdAt: Date? = nil
+    createdAt: Date? = nil,
+    privacy: Privacy = .serverOnly
   ) {
     self.id = id
     self.name = name
     self.fromServer = fromServer
     self.fromChannel = fromChannel
     self.createdAt = createdAt
+    self.privacy = privacy
   }
 }
 

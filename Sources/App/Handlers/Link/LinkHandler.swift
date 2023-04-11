@@ -39,17 +39,18 @@ struct LinkHandler: Handler {
 
   func handleAdd(_ options: [Interaction.ApplicationCommand.Option]) async {
     let url = options.first(where: { $0.name == AddOption.url.v })?.value?.asString
-    let description = options.first(where: { $0.name == AddOption.description.v })?.value?.asString
-    // let tags = options.first(where: { $0.name == AddOption.tags.v })?.value?.asString
-    let privacy = Privacy(options.first(where: { $0.name == AddOption.privacy.v })?.value?.asString)
-    let serverId = event.guild_id
-    let channelId = event.channel_id
-    let userId = event.member?.user?.id
 
     guard let url else {
       await sendFailure(message: "You have to at least send a url")
       return
     }
+
+    let description = options.first(where: { $0.name == AddOption.description.v })?.value?.asString
+    let privacy = Privacy(options.first(where: { $0.name == AddOption.privacy.v })?.value?.asString)
+    let serverId = event.guild_id
+    let channelId = event.channel_id
+    let userId = event.member?.user?.id
+    let rawTags = options.first(where: { $0.name == AddOption.tags.v })?.value?.asString
 
     let link = Link(
       title: description ?? "",
@@ -60,8 +61,10 @@ struct LinkHandler: Handler {
       privacy: privacy
     )
 
+    let tags = await processTags(rawTags, event: event, privacy: privacy)
+
     do {
-      try await LinkRepo.shared.saveLink(link: link)
+      try await Repo.shared.saveLink(link: link, tags: tags)
 
       await svc.respondToInteraction(
         id: event.id,
@@ -99,14 +102,14 @@ struct LinkHandler: Handler {
           return
         }
 
-        links = try await LinkRepo.shared.getLinks(filter: privacy, id: id)
+        links = try await Repo.shared.getLinks(filter: privacy, id: id)
       } else if privacy == .serverOnly {
         guard let id = event.guild_id else {
           await sendFailure(message: "Unable to get server id")
           return
         }
 
-        links = try await LinkRepo.shared.getLinks(filter: privacy, id: id)
+        links = try await Repo.shared.getLinks(filter: privacy, id: id)
       } else {
         await sendFailure(message: "Invalid filter value")
         return
@@ -136,6 +139,39 @@ struct LinkHandler: Handler {
       )
     } catch {
       logger.report("Unable to get links", error: error)
+    }
+  }
+
+  private func processTags(_ tags: String?, event: Interaction, privacy: Privacy) async -> [Tag] {
+    guard let tags else {
+      return []
+    }
+
+    let tagNames =
+      tags
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+      .lowercased()
+      .split(separator: ",", omittingEmptySubsequences: true)
+      .map { String($0) }
+
+    do {
+      let dbTags = try await Repo.shared.getTags(names: tagNames, server: event.guild_id ?? "")
+
+      return try tagNames.map { (tag: String) in
+        let existingTag = dbTags.first(where: { $0.name == tag })
+
+        return Tag(
+          id: try existingTag?.requireID() ?? UUID(),
+          name: existingTag?.name ?? tag,
+          fromServer: existingTag?.fromServer ?? event.guild_id ?? "",
+          fromChannel: existingTag?.fromChannel ?? event.channel_id ?? "",
+          privacy: existingTag?.privacy ?? privacy
+        )
+      }
+    } catch {
+      logger.report("Can't find tags :(", error: error, metadata: ["tags": "\(tagNames)"])
+
+      return []
     }
   }
 }

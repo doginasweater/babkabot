@@ -1,12 +1,12 @@
 import Fluent
 import Vapor
 
-actor LinkRepo {
+actor Repo {
   private var db: Database!
 
   private init() {}
 
-  static let shared: LinkRepo = LinkRepo()
+  static let shared: Repo = Repo()
 
   func initialize(db: Database) {
     self.db = db
@@ -27,7 +27,19 @@ actor LinkRepo {
     }
   }
 
-  func saveLink(link: Link) async throws {
+  func saveLink(link: Link, tags: [Tag]) async throws {
     try await link.save(on: db)
+
+    for tag in tags {
+      try await tag.save(on: db)
+      try await link.$tags.attach(tag, method: .ifNotExists, on: db)
+    }
+  }
+
+  func getTags(names: [String], server: String) async throws -> [Tag] {
+    try await Tag.query(on: db)
+      .filter(\.$fromServer == server)
+      .filter(\.$name ~~ names)
+      .all()
   }
 }

@@ -30,6 +30,7 @@ func configureDiscord(_ app: Application) -> BotGatewayManager {
   return bot
 }
 
+/// Configure the logger!
 func configureLogger(_ app: Application) async throws {
   guard
     let webhookURL = Environment.get("LOG_URL"),
@@ -71,6 +72,11 @@ func configureLogger(_ app: Application) async throws {
   )
 }
 
+/// Configure the database for the app
+///
+///  - Parameters:
+///    - app: The main application object
+///  - Returns: void
 func configureDatabase(_ app: Application) async throws {
   switch app.environment {
   case .production:
@@ -93,6 +99,9 @@ func configureDatabase(_ app: Application) async throws {
   try await app.autoMigrate()
 }
 
+/// Main configuration function
+///
+/// - Parameter app: the main application object
 public func configure(_ app: Application) async throws {
   try await configureLogger(app)
   try await configureDatabase(app)

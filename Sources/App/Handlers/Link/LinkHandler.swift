@@ -125,7 +125,7 @@ struct LinkHandler: Handler {
             description: """
               URL: \(link.url)
               Tags: \(link.tags.isEmpty ? "None" : String(link.tags.map { $0.name }.joined(by: ", ")))
-              Created by \(link.createdBy) at \(link.createdAt)
+              Created by \(link.createdBy) at \(link.createdAt?.formatted(.dateTime) ?? "unknown")
               """,
             url: link.url
           )

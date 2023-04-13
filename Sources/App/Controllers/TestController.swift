@@ -1,6 +1,7 @@
 import Fluent
 import Vapor
 
+/// This is a goddamn controller
 struct TestController: RouteCollection {
   func boot(routes: RoutesBuilder) throws {
     let debug = routes.grouped("debug")

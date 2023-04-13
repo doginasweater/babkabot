@@ -1,10 +1,10 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.7
 import PackageDescription
 
 let package = Package(
   name: "babkabot",
   platforms: [
-    .macOS(.v12)
+    .macOS(.v13)
   ],
   dependencies: [
     // 💧 A server-side Swift web framework.
@@ -15,6 +15,7 @@ let package = Package(
     .package(url: "https://github.com/MahdiBM/DiscordBM", from: "1.0.0-beta.1"),
     .package(url: "https://github.com/swift-server/async-http-client.git", from: "1.9.0"),
     .package(url: "https://github.com/YusukeHosonuma/SwiftPrettyPrint.git", .upToNextMajor(from: "1.2.0")),
+    .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.2.0"),
   ],
   targets: [
     .target(

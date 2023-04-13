@@ -1,12 +1,14 @@
 import DiscordBM
 import Logging
 
+/// DiscordService is the primary way of interacting with the Discord API
 actor DiscordService {
   private var discordClient: (any DiscordClient)!
   private var logger = Logger(label: "DiscordService")
 
   private init() {}
 
+  /// As the service is a singleton, all access should go through this shared property
   static let shared = DiscordService()
 
   func initialize(client: any DiscordClient) {

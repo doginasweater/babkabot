@@ -2,7 +2,7 @@ import DiscordBM
 import Logging
 
 /// DiscordService is the primary way of interacting with the Discord API
-actor DiscordService {
+public actor DiscordService {
   private var discordClient: (any DiscordClient)!
   private var logger = Logger(label: "DiscordService")
 

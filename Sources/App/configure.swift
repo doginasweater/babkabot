@@ -5,7 +5,7 @@ import FluentPostgresDriver
 import FluentSQLiteDriver
 import Vapor
 
-func configureDiscord(_ app: Application) -> BotGatewayManager {
+public func configureDiscord(_ app: Application) -> BotGatewayManager {
   guard let token = Environment.get("DISCORD_API_TOKEN") else {
     fatalError("Unable to find bot token")
   }
@@ -31,7 +31,9 @@ func configureDiscord(_ app: Application) -> BotGatewayManager {
 }
 
 /// Configure the logger!
-func configureLogger(_ app: Application) async throws {
+///
+/// - Parameter app: main app stuff
+public func configureLogger(_ app: Application) async throws {
   guard
     let webhookURL = Environment.get("LOG_URL"),
     let meId = Environment.get("ME_ID"),
@@ -77,7 +79,7 @@ func configureLogger(_ app: Application) async throws {
 ///  - Parameters:
 ///    - app: The main application object
 ///  - Returns: void
-func configureDatabase(_ app: Application) async throws {
+public func configureDatabase(_ app: Application) async throws {
   switch app.environment {
   case .production:
     guard let databaseURL = Environment.get("DATABASE_URL") else {

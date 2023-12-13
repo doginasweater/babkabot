@@ -2,19 +2,18 @@ import DiscordBM
 import Logging
 
 actor GatewayService {
-  private var gatewayManager: BotGatewayManager!
-  private var logger = Logger(label: "GatewayService")
+  private let gatewayManager: BotGatewayManager
+  private let logger = Logger(label: "GatewayService")
 
-  private init() {}
-
-  static let shared: GatewayService = GatewayService()
-
-  func initialize(bot: BotGatewayManager) {
+  init(bot: BotGatewayManager) {
     self.gatewayManager = bot
   }
 
   func updatePresence(
-    name: String, type: Gateway.Activity.Kind, status: Gateway.Status, afk: Bool = false
+    name: String,
+    type: Gateway.Activity.Kind,
+    status: Gateway.Status,
+    afk: Bool = false
   ) async {
     logger.info(
       "Writing new presence",

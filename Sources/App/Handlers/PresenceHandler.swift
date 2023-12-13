@@ -4,13 +4,12 @@ import Foundation
 import Logging
 
 struct PresenceHandler: Handler {
-  var gatewayService: GatewayService { .shared }
-
   let event: Interaction
   let data: Interaction.ApplicationCommand
-  let client: HTTPClient
+  let ctx: Context
 
   func handle() async {
+    let svc = ctx.services.discordSvc
     let options = data.options ?? []
 
     if options.isEmpty {
@@ -26,13 +25,12 @@ struct PresenceHandler: Handler {
       return
     }
 
-    await gatewayService.updatePresence(name: activity, type: toKind(from: type), status: .online)
+    await ctx.services.gatewaySvc.updatePresence(name: activity, type: toKind(from: type), status: .online)
     await svc.respondToInteraction(
       id: event.id,
       token: event.token,
-      payload: .init(
-        type: .channelMessageWithSource,
-        data: .init(
+      payload: .channelMessageWithSource(
+        .init(
           content: "Updated bot presence!"
         )
       )

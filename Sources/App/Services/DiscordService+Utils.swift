@@ -6,9 +6,8 @@ extension DiscordService {
     await self.respondToInteraction(
       id: event.id,
       token: event.token,
-      payload: .init(
-        type: .channelMessageWithSource,
-        data: .init(
+      payload: .channelMessageWithSource(
+        .init(
           embeds: [
             .init(description: message)
           ]

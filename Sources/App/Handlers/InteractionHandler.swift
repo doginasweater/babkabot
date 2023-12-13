@@ -5,26 +5,31 @@ import Logging
 
 struct InteractionHandler {
   var logger = Logger(label: String(describing: InteractionHandler.self))
-  var discordService: DiscordService { .shared }
 
   let event: Interaction
-  let client: HTTPClient
+  let ctx: Context
 
   func handle() async {
+    // switch event.data {
+    // case let .applicationCommand(data) where event.type == .applicationCommand:
+    //   guard let command = SlashCommand(rawValue: data.name) else {
+    //     logger.error("Unrecognized command")
+    //   }
+    // }
     guard case let .applicationCommand(data) = event.data else {
       logger.error("Unrecognized command")
       return await sendUnknownCommandFailure()
     }
 
-    switch CommandKind(name: data.name) {
+    switch SlashCommand(rawValue: data.name) {
     case .define:
-      await DefineHandler(event: event, data: data, client: client).handle()
+      await DefineHandler(event: event, data: data, ctx: ctx).handle()
     case .presence:
-      await PresenceHandler(event: event, data: data, client: client).handle()
+      await PresenceHandler(event: event, data: data, ctx: ctx).handle()
     case .sunny:
-      await SunnyHandler(event: event, data: data, client: client).handle()
+      await SunnyHandler(event: event, data: data, ctx: ctx).handle()
     case .link:
-      await LinkHandler(event: event, data: data, client: client).handle()
+      await LinkHandler(event: event, data: data, ctx: ctx).handle()
     default:
       logger.error("Unrecognized command")
       return await sendUnknownCommandFailure()
@@ -32,12 +37,11 @@ struct InteractionHandler {
   }
 
   private func sendUnknownCommandFailure() async {
-    await discordService.respondToInteraction(
+    await ctx.services.discordSvc.respondToInteraction(
       id: event.id,
       token: event.token,
-      payload: .init(
-        type: .channelMessageWithSource,
-        data: .init(
+      payload: .channelMessageWithSource(
+        .init(
           embeds: [
             .init(description: "Failed to resolve the interaction name :(")
           ],

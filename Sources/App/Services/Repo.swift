@@ -2,13 +2,9 @@ import Fluent
 import Vapor
 
 actor Repo {
-  private var db: Database!
+  private let db: Database
 
-  private init() {}
-
-  static let shared: Repo = Repo()
-
-  func initialize(db: Database) {
+  init(db: Database) {
     self.db = db
   }
 

@@ -2,20 +2,15 @@ import AsyncHTTPClient
 import DiscordBM
 import Logging
 
-struct EventHandler: Sendable {
+struct EventHandler: GatewayEventHandler {
   let event: Gateway.Event
-  let client: HTTPClient
-  let logger = Logger(label: "EventHandler")
+  let ctx: Context
 
-  func handle() {
-    Task {
-      switch event.data {
-      case .messageCreate(let message):
-        await MessageHandler(event: message).handle()
-      case .interactionCreate(let interaction):
-        await InteractionHandler(event: interaction, client: client).handle()
-      default: break
-      }
-    }
+  func onMessageCreate(_ payload: Gateway.MessageCreate) async throws {
+    await MessageHandler(event: payload, ctx: ctx).handle()
+  }
+
+  func onInteractionCreate(_ payload: Interaction) async throws {
+    await InteractionHandler(event: payload, ctx: ctx).handle()
   }
 }

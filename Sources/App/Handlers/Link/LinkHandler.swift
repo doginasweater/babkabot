@@ -7,9 +7,10 @@ import SwiftPrettyPrint
 struct LinkHandler: Handler {
   let event: Interaction
   let data: Interaction.ApplicationCommand
-  let client: HTTPClient
+  let ctx: Context
 
   func handle() async {
+    let svc = ctx.services.discordSvc
     let options = data.options ?? []
 
     if options.isEmpty {
@@ -18,12 +19,12 @@ struct LinkHandler: Handler {
     }
 
     guard let command = LinkCommand(options[0].name) else {
-      await sendFailure(message: "Unknown subcommand")
+      await sendFailure("Unknown subcommand")
       return
     }
 
     guard let subOptions = options[0].options else {
-      await sendFailure(message: "No options found")
+      await sendFailure("No options found")
       return
     }
 
@@ -38,10 +39,12 @@ struct LinkHandler: Handler {
   }
 
   func handleAdd(_ options: [Interaction.ApplicationCommand.Option]) async {
+    let repo = ctx.services.repo
+    let svc = ctx.services.discordSvc
     let url = options.first(where: { $0.name == AddOption.url.v })?.value?.asString
 
     guard let url else {
-      await sendFailure(message: "You have to at least send a url")
+      await sendFailure("You have to at least send a url")
       return
     }
 
@@ -56,22 +59,21 @@ struct LinkHandler: Handler {
       title: description ?? "",
       url: url,
       createdBy: userId ?? "",
-      fromServer: serverId ?? "",
-      fromChannel: channelId ?? "",
+      fromServer: serverId?.rawValue ?? "",
+      fromChannel: channelId?.rawValue ?? "",
       privacy: privacy
     )
 
     let tags = await processTags(rawTags, event: event, privacy: privacy)
 
     do {
-      try await Repo.shared.saveLink(link: link, tags: tags)
+      try await repo.saveLink(link: link, tags: tags)
 
       await svc.respondToInteraction(
         id: event.id,
         token: event.token,
-        payload: .init(
-          type: .channelMessageWithSource,
-          data: .init(
+        payload: .channelMessageWithSource(
+          .init(
             content: "Saved link to \(url)!"
           )
         )
@@ -82,7 +84,8 @@ struct LinkHandler: Handler {
         metadata: [
           "link": "\(link)"
         ])
-      await sendFailure(message: "Unable to save link")
+
+      await sendFailure("Unable to save link")
     }
   }
 
@@ -91,27 +94,29 @@ struct LinkHandler: Handler {
   }
 
   func handleList(_ options: [Interaction.ApplicationCommand.Option]) async {
+    let repo = ctx.services.repo
+    let svc = ctx.services.discordSvc
     let privacy = Privacy(options.first(where: { $0.name == "filter" })?.value?.asString)
 
     do {
       var links: [Link]
 
       if privacy == .personal {
-        guard let id = event.member?.user?.id else {
-          await sendFailure(message: "Unable to get user id")
+        guard let id = event.member?.user?.id.rawValue else {
+          await sendFailure("Unable to get user id")
           return
         }
 
-        links = try await Repo.shared.getLinks(filter: privacy, id: id)
+        links = try await repo.getLinks(filter: privacy, id: id)
       } else if privacy == .serverOnly {
-        guard let id = event.guild_id else {
-          await sendFailure(message: "Unable to get server id")
+        guard let id = event.guild_id?.rawValue else {
+          await sendFailure("Unable to get server id")
           return
         }
 
-        links = try await Repo.shared.getLinks(filter: privacy, id: id)
+        links = try await repo.getLinks(filter: privacy, id: id)
       } else {
-        await sendFailure(message: "Invalid filter value")
+        await sendFailure("Invalid filter value")
         return
       }
 
@@ -134,9 +139,8 @@ struct LinkHandler: Handler {
       await svc.respondToInteraction(
         id: event.id,
         token: event.token,
-        payload: .init(
-          type: .channelMessageWithSource,
-          data: .init(
+        payload: .channelMessageWithSource(
+          .init(
             embeds: embeds
           )
         )
@@ -147,6 +151,8 @@ struct LinkHandler: Handler {
   }
 
   private func processTags(_ tags: String?, event: Interaction, privacy: Privacy) async -> [Tag] {
+    let repo = ctx.services.repo
+
     guard let tags else {
       return []
     }
@@ -159,7 +165,7 @@ struct LinkHandler: Handler {
       .map { String($0) }
 
     do {
-      let dbTags = try await Repo.shared.getTags(names: tagNames, server: event.guild_id ?? "")
+      let dbTags = try await repo.getTags(names: tagNames, server: event.guild_id?.rawValue ?? "")
 
       return try tagNames.map { (tag: String) in
         let existingTag = dbTags.first(where: { $0.name == tag })
@@ -167,8 +173,8 @@ struct LinkHandler: Handler {
         return Tag(
           id: try existingTag?.requireID() ?? UUID(),
           name: existingTag?.name ?? tag,
-          fromServer: existingTag?.fromServer ?? event.guild_id ?? "",
-          fromChannel: existingTag?.fromChannel ?? event.channel_id ?? "",
+          fromServer: existingTag?.fromServer ?? event.guild_id?.rawValue ?? "",
+          fromChannel: existingTag?.fromChannel ?? event.channel_id?.rawValue ?? "",
           privacy: existingTag?.privacy ?? privacy
         )
       }

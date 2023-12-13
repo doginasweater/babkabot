@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-server/async-http-client.git",
       "state" : {
-        "revision" : "864c8d9e0ead5de7ba70b61c8982f89126710863",
-        "version" : "1.15.0"
+        "revision" : "16f7e62c08c6969899ce6cc277041e868364e5cf",
+        "version" : "1.19.0"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/console-kit.git",
       "state" : {
-        "revision" : "447f1046fb4e9df40973fe426ecb24a6f0e8d3b4",
-        "version" : "4.6.0"
+        "revision" : "a7dd7001196d39b758e4990ec0f26f80162f4c84",
+        "version" : "4.14.0"
       }
     },
     {
@@ -48,10 +48,19 @@
     {
       "identity" : "discordbm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/MahdiBM/DiscordBM",
+      "location" : "https://github.com/DiscordBM/DiscordBM",
       "state" : {
-        "revision" : "711a37ca26fc30bf592631781117841e895811aa",
-        "version" : "1.0.0-beta.43"
+        "revision" : "a9ca2be186f6092d87940b09caa6ab9b35491e40",
+        "version" : "1.7.0"
+      }
+    },
+    {
+      "identity" : "discordlogger",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DiscordBM/DiscordLogger",
+      "state" : {
+        "revision" : "e097e726b71d5f20656d5d7c294df912a898ae8f",
+        "version" : "1.0.0-rc.2"
       }
     },
     {
@@ -190,15 +199,6 @@
       }
     },
     {
-      "identity" : "swift-backtrace",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swift-server/swift-backtrace.git",
-      "state" : {
-        "revision" : "f25620d5d05e2f1ba27154b40cafea2b67566956",
-        "version" : "1.3.3"
-      }
-    },
-    {
       "identity" : "swift-collections",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-collections.git",
@@ -235,6 +235,15 @@
       }
     },
     {
+      "identity" : "swift-http-types",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-http-types",
+      "state" : {
+        "revision" : "1827dc94bdab2eb5f2fc804e9b0cb43574282566",
+        "version" : "1.0.2"
+      }
+    },
+    {
       "identity" : "swift-log",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
@@ -257,8 +266,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio.git",
       "state" : {
-        "revision" : "9b2848d76f5caad08b97e71a04345aa5bdb23a06",
-        "version" : "2.49.0"
+        "revision" : "702cd7c56d5d44eeba73fdf83918339b26dc855c",
+        "version" : "2.62.0"
       }
     },
     {
@@ -266,8 +275,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-extras.git",
       "state" : {
-        "revision" : "cc1e5275079380c859417dbea8588531f1a90ec3",
-        "version" : "1.18.0"
+        "revision" : "798c962495593a23fdea0c0c63fd55571d8dff51",
+        "version" : "1.20.0"
       }
     },
     {
@@ -275,8 +284,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-http2.git",
       "state" : {
-        "revision" : "a8ccf13fa62775277a5d56844878c828bbb3be1a",
-        "version" : "1.27.0"
+        "revision" : "3bd9004b9d685ed6b629760fc84903e48efec806",
+        "version" : "1.29.0"
       }
     },
     {
@@ -284,8 +293,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-ssl.git",
       "state" : {
-        "revision" : "4fb7ead803e38949eb1d6fabb849206a72c580f3",
-        "version" : "2.23.0"
+        "revision" : "320bd978cceb8e88c125dcbb774943a92f6286e9",
+        "version" : "2.25.0"
       }
     },
     {
@@ -293,8 +302,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio-transport-services.git",
       "state" : {
-        "revision" : "c0d9a144cfaec8d3d596aadde3039286a266c15c",
-        "version" : "1.15.0"
+        "revision" : "ebf8b9c365a6ce043bf6e6326a04b15589bd285e",
+        "version" : "1.20.0"
       }
     },
     {
@@ -329,8 +338,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/vapor.git",
       "state" : {
-        "revision" : "ba1a308a58ba9d78c5100588d7d8b6e615a98248",
-        "version" : "4.75.0"
+        "revision" : "9c830d4628eb9f3c7b764ebedad757f84ac11052",
+        "version" : "4.89.2"
       }
     },
     {
@@ -338,8 +347,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/websocket-kit.git",
       "state" : {
-        "revision" : "2b8885974e8d9f522e787805000553f4f7cce8a0",
-        "version" : "2.7.0"
+        "revision" : "53fe0639a98903858d0196b699720decb42aee7b",
+        "version" : "2.14.0"
       }
     }
   ],

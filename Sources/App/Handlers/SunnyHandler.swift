@@ -10,20 +10,20 @@ struct SunnyRequest: Codable {
 struct SunnyHandler: Handler {
   let event: Interaction
   let data: Interaction.ApplicationCommand
-  let client: HTTPClient
+  let ctx: Context
 
   func handle() async {
     let options = data.options ?? []
 
     if options.isEmpty {
       logger.error("Options is empty")
-      await sendFailure(message: "Gotta send a title")
+      await sendFailure("Gotta send a title")
     }
 
     guard
       let title = options.first(where: { $0.name == "title" })?.value?.asString
     else {
-      await sendFailure(message: "Gotta send a title")
+      await sendFailure("Gotta send a title")
       return
     }
 
@@ -36,11 +36,13 @@ struct SunnyHandler: Handler {
           "title": "\(title)"
         ])
 
-      await sendFailure(message: "Unable to generate a title card :(")
+      await sendFailure("Unable to generate a title card :(")
     }
   }
 
   private func getTitleCard(_ title: String) async throws {
+    let client = ctx.services.httpClient
+
     var request = HTTPClientRequest(url: "https://sunnybot.fly.dev/sunny")
     request.method = .POST
     request.headers.add(name: .contentType, value: "application/json")
@@ -57,18 +59,17 @@ struct SunnyHandler: Handler {
           "body": "\(response.body)",
         ])
 
-      await sendFailure(message: "Unable to generate a title card :(")
+      await sendFailure("Unable to generate a title card :(")
       return
     }
 
     let body = try await response.body.collect(upTo: 1 << 24)
 
-    await svc.respondToInteraction(
+    await ctx.services.discordSvc.respondToInteraction(
       id: event.id,
       token: event.token,
-      payload: .init(
-        type: .channelMessageWithSource,
-        data: .init(
+      payload: .channelMessageWithSource(
+        .init(
           embeds: [.init(title: "Title card", image: .init(url: .attachment(name: "image.png")))],
           files: [.init(data: body, filename: "image.png")]
         )

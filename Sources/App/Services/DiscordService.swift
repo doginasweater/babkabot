@@ -3,36 +3,47 @@ import Logging
 
 /// DiscordService is the primary way of interacting with the Discord API
 public actor DiscordService {
-  private var discordClient: (any DiscordClient)!
-  private var logger = Logger(label: "DiscordService")
+  private let discordClient: any DiscordClient
+  private let cache: DiscordCache
+  private let logger = Logger(label: "DiscordService")
 
-  private init() {}
-
-  /// As the service is a singleton, all access should go through this shared property
-  static let shared = DiscordService()
-
-  func initialize(client: any DiscordClient) {
+  init(client: any DiscordClient, cache: DiscordCache) {
     self.discordClient = client
+    self.cache = cache
   }
 
-  func writeCommands(_ commands: [RequestBody.ApplicationCommandCreate]) async {
+  @discardableResult
+  func sendMessage(
+    channelId: ChannelSnowflake,
+    payload: Payloads.CreateMessage
+  ) async -> DiscordClientResponse<DiscordChannel.Message>? {
     do {
-      try await discordClient
-        .bulkSetApplicationCommands(payload: commands)
-        .guardSuccess()
+      let response = try await discordClient.createMessage(
+        channelId: channelId,
+        payload: payload
+      )
+
+      try response.guardSuccess()
+
+      return response
     } catch {
       logger.report(
-        "Couldn't overwrite application commands.", error: error,
+        "Couldn't send message", error: error,
         metadata: [
-          "commands": "\(commands)"
+          "channelId": "\(channelId)",
+          "payload": "\(payload)",
         ])
+
+      return nil
     }
   }
 
   @discardableResult
-  func respondToInteraction(id: String, token: String, payload: RequestBody.InteractionResponse)
-    async -> Bool
-  {
+  func respondToInteraction(
+    id: InteractionSnowflake,
+    token: String,
+    payload: Payloads.InteractionResponse
+  ) async -> Bool {
     do {
       try await discordClient.createInteractionResponse(
         id: id,
@@ -45,7 +56,7 @@ public actor DiscordService {
       logger.report(
         "Couldn't send interaction response", error: error,
         metadata: [
-          "id": .string(id),
+          "id": "\(id)",
           "token": .string(token),
           "payload": "\(payload)",
         ])
@@ -54,7 +65,10 @@ public actor DiscordService {
     }
   }
 
-  func editInteraction(token: String, payload: RequestBody.InteractionResponse.CallbackData) async {
+  func editInteraction(
+    token: String,
+    payload: Payloads.EditWebhookMessage
+  ) async {
     do {
       try await discordClient.updateOriginalInteractionResponse(
         token: token,
@@ -70,49 +84,34 @@ public actor DiscordService {
     }
   }
 
-  func sendMessage(channelId: String, message: String) async {
-    do {
-      try await discordClient.createMessage(
-        channelId: channelId,
-        payload: .init(content: message)
-      ).guardSuccess()
-    } catch {
-      logger.report(
-        "Couldn't send message", error: error,
-        metadata: [
-          "channelId": .string(channelId),
-          "payload": "\(message)",
-        ])
-    }
-  }
-
-  func sendReply(channelId: String, message: String, messageId: String, guildId: String?) async {
-    do {
-      try await discordClient.createMessage(
-        channelId: channelId,
-        payload: .init(
-          content: message,
-          message_reference: .init(
-            message_id: messageId,
-            channel_id: channelId,
-            guild_id: guildId,
-            fail_if_not_exists: false
-          )
+  @discardableResult
+  func sendReply(
+    channelId: ChannelSnowflake,
+    message: String,
+    messageId: MessageSnowflake,
+    guildId: GuildSnowflake?
+  ) async -> DiscordClientResponse<DiscordChannel.Message>? {
+    await self.sendMessage(
+      channelId: channelId,
+      payload: .init(
+        content: message,
+        message_reference: .init(
+          message_id: messageId,
+          channel_id: channelId,
+          guild_id: guildId,
+          fail_if_not_exists: false
         )
-      ).guardSuccess()
-    } catch {
-      logger.report(
-        "Couldn't send reply", error: error,
-        metadata: [
-          "channelId": .string(channelId),
-          "payload": "\(message)",
-        ])
-    }
+      )
+    )
   }
 
-  func addReaction(channelId: String, messageId: String, emoji: String) async {
+  func addReaction(
+    channelId: ChannelSnowflake,
+    messageId: MessageSnowflake,
+    emoji: String
+  ) async {
     do {
-      try await discordClient.addOwnMessageReaction(
+      try await discordClient.addMessageReaction(
         channelId: channelId,
         messageId: messageId,
         emoji: .unicodeEmoji(emoji)
@@ -121,13 +120,17 @@ public actor DiscordService {
       logger.report(
         "Unable to add reaction to message", error: error,
         metadata: [
-          "channelId": .string(channelId),
-          "messageId": .string(messageId),
+          "channelId": "\(channelId)",
+          "messageId": "\(messageId)",
         ])
     }
   }
 
-  func editMessage(channelId: String, messageId: String, newContent: String) async {
+  func editMessage(
+    channelId: ChannelSnowflake,
+    messageId: MessageSnowflake,
+    newContent: String
+  ) async {
     do {
       try await discordClient.updateMessage(
         channelId: channelId,
@@ -138,9 +141,9 @@ public actor DiscordService {
       logger.report(
         "Unable to modify message", error: error,
         metadata: [
-          "channelId": .string(channelId),
-          "messageId": .string(messageId),
-          "content": .string(newContent),
+          "channelId": "\(channelId)",
+          "messageId": "\(messageId)",
+          "content": "\(newContent)",
         ])
     }
   }

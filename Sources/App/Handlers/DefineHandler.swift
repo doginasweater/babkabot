@@ -6,18 +6,18 @@ import Logging
 struct DefineHandler: Handler {
   let event: Interaction
   let data: Interaction.ApplicationCommand
-  let client: HTTPClient
+  let ctx: Context
 
   func handle() async {
     let options = data.options ?? []
 
     if options.isEmpty {
       logger.error("Options is empty")
-      await sendFailure(message: "You didn't give me a word to define")
+      await sendFailure("You didn't give me a word to define")
     }
 
     guard let word = options[0].value?.asString else {
-      await sendFailure(message: "You didn't give me a word to define")
+      await sendFailure("You didn't give me a word to define")
       return
     }
 
@@ -25,28 +25,26 @@ struct DefineHandler: Handler {
       try await getWordDefinition(word)
     } catch {
       logger.report("Unable to get definition for \(word)", error: error)
-      await sendFailure(message: "Error occurred while getting definition for **\(word)**")
+      await sendFailure("Error occurred while getting definition for **\(word)**")
     }
   }
 
   private func getWordDefinition(_ word: String) async throws {
+    let client = ctx.services.httpClient
+
     let request = HTTPClientRequest(url: "https://api.dictionaryapi.dev/api/v2/entries/en/\(word)")
     let response = try await client.execute(request, timeout: .seconds(30), logger: self.logger)
 
     guard response.status.code == 200 else {
       if response.status.code == 404 {
-        await sendFailure(
-          message:
-            "Unable to find definition for **\(word)**. Does that word exist? Did you spell it right?"
-        )
+        await sendFailure("Unable to find definition for **\(word)**. Does that word exist? Did you spell it right?")
       } else {
         logger.error(
           "Request for \(word) failed",
           metadata: [
             "status": "\(response.status.code)"
           ])
-        await sendFailure(
-          message: "Unable to find definition for **\(word)**. Seems like it might be an API error")
+        await sendFailure("Unable to find definition for **\(word)**. Seems like it might be an API error")
       }
 
       return
@@ -56,7 +54,7 @@ struct DefineHandler: Handler {
     let apiResponse = try JSONDecoder().decode([ApiResponse].self, from: body)
 
     guard apiResponse.count > 0 else {
-      await svc.sendFailure(event: event, message: "No meanings found for **\(word)**")
+      await sendFailure("No meanings found for **\(word)**")
       return
     }
 
@@ -84,12 +82,11 @@ struct DefineHandler: Handler {
   }
 
   private func respond(_ word: String, _ response: String) async {
-    await svc.respondToInteraction(
+    await ctx.services.discordSvc.respondToInteraction(
       id: event.id,
       token: event.token,
-      payload: .init(
-        type: .channelMessageWithSource,
-        data: .init(
+      payload: .channelMessageWithSource(
+        .init(
           embeds: [
             .init(
               title: "Definition for **\(word)**",
@@ -102,13 +99,10 @@ struct DefineHandler: Handler {
   }
 
   private func acknowledge(isEphemeral: Bool) async -> Bool {
-    await svc.respondToInteraction(
+    await ctx.services.discordSvc.respondToInteraction(
       id: event.id,
       token: event.token,
-      payload: .init(
-        type: .deferredChannelMessageWithSource,
-        data: isEphemeral ? .init(flags: [.ephemeral]) : nil
-      )
+      payload: .deferredChannelMessageWithSource(isEphemeral: isEphemeral)
     )
   }
 }

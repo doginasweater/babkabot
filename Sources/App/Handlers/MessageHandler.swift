@@ -4,21 +4,22 @@ import Logging
 
 struct MessageHandler {
   var logger = Logger(label: "MessageHandler")
-  var discordService: DiscordService { .shared }
 
   let event: Gateway.MessageCreate
+  let ctx: Context
 
   func handle() async {
+    let client = ctx.services.discordSvc
     let content = event.content.lowercased()
 
     if content.contains("h word") {
-      await discordService.addReaction(
+      await client.addReaction(
         channelId: event.channel_id,
         messageId: event.id,
         emoji: "❌"
       )
 
-      await discordService.sendReply(
+      await client.sendReply(
         channelId: event.channel_id,
         message: "Just say horny oh my god",
         messageId: event.id,
@@ -27,7 +28,7 @@ struct MessageHandler {
     } else if let match = content.firstMatch(of: /(-?[0-9]{1,2})c/),
       let c = Double(match.1)
     {
-      await discordService.sendReply(
+      await client.sendReply(
         channelId: event.channel_id,
         message: "I think you mean \(toF(c))°F",
         messageId: event.id,
@@ -36,7 +37,7 @@ struct MessageHandler {
     } else if let match = content.firstMatch(of: /(-?[0-9]{1,3})f/),
       let f = Double(match.1)
     {
-      await discordService.sendReply(
+      await client.sendReply(
         channelId: event.channel_id,
         message: "I think you mean \(toC(f))°C",
         messageId: event.id,

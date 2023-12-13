@@ -3,6 +3,7 @@ import DiscordLogger
 import Fluent
 import FluentPostgresDriver
 import FluentSQLiteDriver
+import Logging
 import Vapor
 
 public func configureDiscord(_ app: Application) async -> BotGatewayManager {
@@ -28,46 +29,49 @@ public func configureDiscord(_ app: Application) async -> BotGatewayManager {
 /// Configure the logger!
 ///
 /// - Parameter app: main app stuff
-// public func configureLogger(_ app: Application) async throws {
-//   guard
-//     let webhookURL = Environment.get("LOG_URL"),
-//     let meId = Environment.get("ME_ID"),
-//     let warningRole = Environment.get("WARNING_ROLE"),
-//     let errorRole = Environment.get("ERROR_ROLE"),
-//     let criticalRole = Environment.get("CRITICAL_ROLE")
-//   else {
-//     app.logger.warning(
-//       "Unable to load environment variables required for discord logging. Falling back to vapor logging."
-//     )
-//     return
-//   }
+public func configureLogger(_ app: Application) async throws {
+  guard
+    let webhookURL = Environment.get("LOG_URL"),
+    let meId = Environment.get("ME_ID"),
+    let warningRole = Environment.get("WARNING_ROLE"),
+    let errorRole = Environment.get("ERROR_ROLE"),
+    let criticalRole = Environment.get("CRITICAL_ROLE")
+  else {
+    print(
+      "Unable to load environment variables required for discord logging. Falling back to vapor logging."
+    )
+    app.logger.warning(
+      "Unable to load environment variables required for discord logging. Falling back to vapor logging."
+    )
+    return
+  }
 
-//   DiscordGlobalConfiguration.logManager = DiscordLogManager(
-//     httpClient: app.http.client.shared,
-//     configuration: .init(
-//       aliveNotice: .init(
-//         address: try .url(webhookURL),
-//         interval: nil,
-//         message: "Good morning!",
-//         color: .blue,
-//         initialNoticeMention: .user(meId)
-//       ),
-//       mentions: [
-//         .warning: .role(warningRole),
-//         .error: .role(errorRole),
-//         .critical: .role(criticalRole),
-//       ],
-//       extraMetadata: [.warning, .error, .critical],
-//       disabledLogLevels: [.debug, .trace],
-//       disabledInDebug: true
-//     )
-//   )
+  DiscordGlobalConfiguration.logManager = await DiscordLogManager(
+    httpClient: app.http.client.shared,
+    configuration: .init(
+      aliveNotice: .init(
+        address: try .url(webhookURL),
+        interval: nil,
+        message: "Good morning!",
+        color: .blue,
+        initialNoticeMention: .user(.init(meId))
+      ),
+      mentions: [
+        .warning: .role(.init(warningRole)),
+        .error: .role(.init(errorRole)),
+        .critical: .role(.init(criticalRole)),
+      ],
+      extraMetadata: [.warning, .error, .critical],
+      disabledLogLevels: [.debug, .trace],
+      disabledInDebug: true
+    )
+  )
 
-//   await LoggingSystem.bootstrapWithDiscordLogger(
-//     address: try .url(webhookURL),
-//     makeMainLogHandler: StreamLogHandler.standardOutput(label:metadataProvider:)
-//   )
-// }
+  await LoggingSystem.bootstrapWithDiscordLogger(
+    address: try .url(webhookURL),
+    makeMainLogHandler: StreamLogHandler.standardOutput(label:metadataProvider:)
+  )
+}
 
 /// Configure the database for the app
 ///
@@ -100,7 +104,7 @@ public func configureDatabase(_ app: Application) async throws {
 ///
 /// - Parameter app: the main application object
 public func configure(_ app: Application) async throws {
-  // try await configureLogger(app)
+  try await configureLogger(app)
   try await configureDatabase(app)
 
   let bot = await configureDiscord(app)
@@ -131,4 +135,6 @@ public func configure(_ app: Application) async throws {
   if app.environment == .development {
     try app.register(collection: TestController())
   }
+
+  print("We're connected!")
 }

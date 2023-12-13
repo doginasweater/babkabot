@@ -4,10 +4,9 @@ import Vapor
 @main
 enum Entrypoint {
   static func main() async throws {
-    var env = try Environment.detect()
-    try LoggingSystem.bootstrap(from: &env)
-
+    let env = try Environment.detect()
     let app = Application(env)
+
     defer { app.shutdown() }
 
     do {

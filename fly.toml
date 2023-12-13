@@ -2,21 +2,15 @@ app = "babkabot"
 primary_region = "den"
 
 [build]
-  builder = "heroku/builder:22"
-  buildpacks = ["https://cnb-shim.herokuapp.com/v1/vapor/vapor"]
+dockerfile = "Dockerfile"
 
-[processes]
-  app = "Run serve --env production --hostname 0.0.0.0 --port 8080"
+[http_service]
+internal_port = 8080
+force_https = true
+min_machines_running = 1
+processes = ["app"]
 
-[[services]]
-  internal_port = 8080
-  protocol = "tcp"
-
-  [[services.ports]]
-    force_https = true
-    handlers = ["http"]
-    port = 80
-
-  [[services.ports]]
-    handlers = ["tls", "http"]
-    port = 443
+[[vm]]
+cpu_kind = "shared"
+cpus = 1
+memory_mb = 1024

@@ -7,7 +7,10 @@ import Logging
 import Vapor
 
 public func configureDiscord(_ app: Application) async -> BotGatewayManager {
-  guard let token = Environment.get("DISCORD_API_TOKEN") else {
+  guard
+    let token = Environment.get("DISCORD_API_TOKEN"),
+    !token.isEmpty
+  else {
     fatalError("Unable to find bot token")
   }
 

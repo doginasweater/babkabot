@@ -11,6 +11,7 @@ struct MessageHandler {
   func handle() async {
     let client = ctx.services.discordSvc
     let content = event.content.lowercased()
+    let tempRegex = /\b(-?[0-9]{1,2})(c|f)\b/.ignoresCase()
 
     if content.contains("h word") {
       await client.addReaction(
@@ -25,24 +26,22 @@ struct MessageHandler {
         messageId: event.id,
         guildId: event.guild_id
       )
-    } else if let match = content.firstMatch(of: /(-?[0-9]{1,2})c/),
-      let c = Double(match.1)
-    {
-      await client.sendReply(
-        channelId: event.channel_id,
-        message: "I think you mean \(toF(c))°F",
-        messageId: event.id,
-        guildId: event.guild_id
-      )
-    } else if let match = content.firstMatch(of: /(-?[0-9]{1,3})f/),
-      let f = Double(match.1)
-    {
-      await client.sendReply(
-        channelId: event.channel_id,
-        message: "I think you mean \(toC(f))°C",
-        messageId: event.id,
-        guildId: event.guild_id
-      )
+    } else if let match = content.firstMatch(of: tempRegex) {
+      if match.2 == "c", let c = Double(match.1) {
+        await client.sendReply(
+          channelId: event.channel_id,
+          message: "I think you mean \(toF(c))°F",
+          messageId: event.id,
+          guildId: event.guild_id
+        )
+      } else if match.2 == "f", let f = Double(match.1) {
+        await client.sendReply(
+          channelId: event.channel_id,
+          message: "I think you mean \(toC(f))°C",
+          messageId: event.id,
+          guildId: event.guild_id
+        )
+      }
     }
   }
 

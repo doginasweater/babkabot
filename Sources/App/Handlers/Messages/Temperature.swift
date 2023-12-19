@@ -45,7 +45,7 @@ struct TemperatureHandler: MsgHandler {
       return nil
     }
 
-    if TemperatureCache.hasKey(value) {
+    if TemperatureCache.hasKey(from: String(from), value: value) {
       return nil
     }
 
@@ -58,7 +58,7 @@ struct TemperatureHandler: MsgHandler {
       0
     }
 
-    TemperatureCache.add(key: value, value: converted)
+    TemperatureCache.add(unit: String(from), value: value, converted: converted)
 
     return "I think you mean \(converted)°\(from == "c" ? "F" : "C")"
   }
@@ -82,9 +82,15 @@ struct TemperatureCache {
     }
   }
 
-  static var cache: [Double: CacheEntry] = [:]
+  static var cache: [String: CacheEntry] = [:]
 
-  static func hasKey(_ key: Double) -> Bool {
+  private static func getKey(from: String, value: Double) -> String {
+    "\(value)\(from)"
+  }
+
+  static func hasKey(from: String, value: Double) -> Bool {
+    let key = getKey(from: from, value: value)
+
     guard let entry = cache[key] else {
       return false
     }
@@ -98,7 +104,9 @@ struct TemperatureCache {
     return true
   }
 
-  static func add(key: Double, value: Int) {
-    cache[key] = CacheEntry(value: value, expires: Date.now.addingTimeInterval(600))
+  static func add(unit: String, value: Double, converted: Int) {
+    let key = getKey(from: unit, value: value)
+
+    cache[key] = CacheEntry(value: converted, expires: Date.now.addingTimeInterval(600))
   }
 }

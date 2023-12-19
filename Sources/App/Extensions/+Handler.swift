@@ -30,3 +30,23 @@ extension Handler {
     )
   }
 }
+
+protocol MsgHandler {
+  var logger: Logger { get }
+  var event: Gateway.MessageCreate { get }
+  var ctx: Context { get }
+
+  func handle() async
+  func test() -> Bool
+}
+
+extension MsgHandler {
+  func sendFailure(_ message: String) async {
+    await self.ctx.services.discordSvc.sendReply(
+      channelId: event.channel_id,
+      message: message,
+      messageId: event.id,
+      guildId: event.guild_id
+    )
+  }
+}

@@ -10,12 +10,6 @@ struct InteractionHandler {
   let ctx: Context
 
   func handle() async {
-    // switch event.data {
-    // case let .applicationCommand(data) where event.type == .applicationCommand:
-    //   guard let command = SlashCommand(rawValue: data.name) else {
-    //     logger.error("Unrecognized command")
-    //   }
-    // }
     guard case let .applicationCommand(data) = event.data else {
       logger.error("Unrecognized command")
       return await sendUnknownCommandFailure()

@@ -8,20 +8,15 @@ struct MessageHandler {
   let ctx: Context
 
   func handle() async {
-    let tempHandler = TemperatureHandler(event: event, ctx: ctx)
+    let handlers: [MsgHandler] = [
+      TemperatureHandler(event: event, ctx: ctx),
+      HWordHandler(event: event, ctx: ctx),
+    ]
 
-    if tempHandler.test() {
-      await tempHandler.handle()
-
-      return
-    }
-
-    let hWordHandler = HWordHandler(event: event, ctx: ctx)
-
-    if hWordHandler.test() {
-      await hWordHandler.handle()
-
-      return
+    for handler in handlers {
+      if handler.test() {
+        await handler.handle()
+      }
     }
   }
 }
